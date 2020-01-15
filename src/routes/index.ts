@@ -1,5 +1,6 @@
 import express from "express";
 import QRCode from "qrcode";
+import stream from "stream";
 
 const router = express.Router();
 
@@ -8,10 +9,12 @@ router.get("/", async (req, res) => {
     const query = req.query;
     const string = query.string || query.url;
     if (string) {
-      const url = await QRCode.toDataURL(string);
-      res.send(url);
+      res.contentType("image/png");
+      const ps = new stream.PassThrough();
+      QRCode.toFileStream(ps, string);
+      ps.pipe(res);
     } else {
-      res.render("index", { title: "Express" });
+      res.render("index", { title: "QR Generator" });
     }
   } catch (err) {
     console.error(err);
