@@ -1,21 +1,17 @@
 import express from "express";
-import QRCode from "qrcode";
+import path from "path";
+
+import indexRouter from "./routes/index";
 
 const app = express();
 
-app.get("/", async (req, res) => {
-  try {
-    const query = req.query;
-    const string = query.string || query.url;
-    if (string) {
-      const url = await QRCode.toDataURL(string);
-      res.send(url);
-    } else {
-    }
-  } catch (err) {
-    console.error(err);
-  }
-});
+// view engine setup
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
+
+// Routing
+app.get("/", indexRouter);
 
 app.listen(3000, () => {
   console.log("server run: http://localhost:3000");
